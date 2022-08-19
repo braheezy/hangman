@@ -13,7 +13,7 @@ Enjoy!
 
 ## Status
 The following is to be implemented:
-- [ ] End game lose condition :heavy_multiplication_x:
+- [x] End game lose condition :heavy_multiplication_x:
     - Yes, right now if you can't solve the word, the program crashes
 - [ ] Show guessed letters :b::a:
     - The user can't see which letters are guessed which is awkward when playing
@@ -24,3 +24,7 @@ The following is to be implemented:
         - [ ] User input area
         - [ ] Header/Footer
         - [ ] Game message area. Distinct warnings vs success message styles
+- [ ] Clear terminal screen :boom:
+    - Before launching, clear the entire screen for maximum cleanliness
+- [ ] Sanitize better :earth_americas:
+    - Characters like `\t` are deemed okay. That's stupid

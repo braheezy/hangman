@@ -68,7 +68,7 @@ func validateInput() textinput.ValidateFunc {
 //******************************************************************
 type model struct {
 	// Call this repeatedly to get the next graphic
-	graphicGenerator func() string
+	graphicGenerator func() (string, error)
 	// The graphic to show. Changes when player is wrong
 	currentGraphic string
 	// The word the player is trying to guess
@@ -98,7 +98,7 @@ func initialModel() model {
 
 	// Graphic stuff
 	gg := Graphics()
-	cg := gg()
+	cg, _ := gg()
 
 	return model{
 		graphicGenerator: gg,
@@ -156,7 +156,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 				} else {
 					// Wrong guess! increment graphics
-					m.currentGraphic = m.graphicGenerator()
+					graphic, err := m.graphicGenerator()
+					if err != nil {
+						// No more graphics to get. Player loses!
+						m.err = errors.New("you lose")
+						// Looks tacky to leave the last character typed
+						// TODO: Surely this can be refactored
+						m.input.Reset()
+						return m, tea.Quit
+					} else {
+						m.currentGraphic = graphic
+					}
 				}
 				// Remember guesses for next loop
 				m.guesses = append(m.guesses, guess)
