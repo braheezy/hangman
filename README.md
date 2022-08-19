@@ -10,3 +10,17 @@ go run .
 ```
 
 Enjoy!
+
+## Status
+The following is to be implemented:
+- [ ] End game lose condition :heavy_multiplication_x:
+    - Yes, right now if you can't solve the word, the program crashes
+- [ ] Show guessed letters :b::a:
+    - The user can't see which letters are guessed which is awkward when playing
+- [ ] Beautification :sunglasses:
+    - The Board is the only thing with style right now
+    - Add Style to:
+        - [ ] Hangman graphic
+        - [ ] User input area
+        - [ ] Header/Footer
+        - [ ] Game message area. Distinct warnings vs success message styles
