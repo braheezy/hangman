@@ -17,6 +17,9 @@ import (
 
 type errMsg error
 
+//******************************************************************
+// 		Dictionary stuff
+//******************************************************************
 //go:embed dictionary.txt
 var f embed.FS
 var DictionaryFile, _ = f.ReadFile("dictionary.txt")
@@ -194,7 +197,7 @@ func (m model) View() string {
 	// Render the little input area for player guesses
 	s += "\n\n" + m.input.View()
 
-	// DEV: This is for debug :)
+	// !: This is for debug :)
 	// s += fmt.Sprintf("\n\nPsst the word is %s\n\n", m.word)
 
 	s += "\n"
