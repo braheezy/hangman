@@ -54,10 +54,10 @@ func newInput() textinput.Model {
 
 // Only allow letter inputs
 func validateInput() textinput.ValidateFunc {
-	var err error
 	return func(s string) error {
-		if unicode.IsDigit(rune(s[0])) {
-			return err
+		letter := rune(s[0])
+		if !unicode.IsLetter(letter) {
+			return errors.New("not valid input")
 		}
 		return nil
 	}
@@ -139,6 +139,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		// The player has guessed something. Process it.
 		case "enter":
+			// Did the player enter anything?
+			if m.input.Value() == "" {
+				break
+			}
 			// Reset err state
 			m.err = nil
 			// Pull out the letter

@@ -26,5 +26,5 @@ The following is to be implemented:
         - [ ] Game message area. Distinct warnings vs success message styles
 - [ ] Clear terminal screen :boom:
     - Before launching, clear the entire screen for maximum cleanliness
-- [ ] Sanitize better :earth_americas:
-    - Characters like `\t` are deemed okay. That's stupid
+- [x] Sanitize better :earth_americas:
+    - Characters like `.` and nothing are deemed okay. That's stupid
