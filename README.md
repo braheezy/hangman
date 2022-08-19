@@ -24,7 +24,7 @@ The following is to be implemented:
         - [ ] User input area
         - [ ] Header/Footer
         - [ ] Game message area. Distinct warnings vs success message styles
-- [ ] Clear terminal screen :boom:
+- [x] Clear terminal screen :boom:
     - Before launching, clear the entire screen for maximum cleanliness
 - [x] Sanitize better :earth_americas:
     - Characters like `.` and nothing are deemed okay. That's stupid

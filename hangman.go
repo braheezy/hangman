@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 	"time"
 	"unicode"
@@ -228,9 +230,43 @@ func (m model) View() string {
 }
 
 //******************************************************************
+//		Clear screen logic
+//	Thanks: https://stackoverflow.com/questions/22891644/how-can-i-clear-the-terminal-screen-in-go
+//******************************************************************
+// Store clear commands for different OSes
+var clearFuncs map[string]func() = initClearMap()
+
+func initClearMap() map[string]func() {
+	clearMap := make(map[string]func())
+
+	clearMap["linux"] = func() {
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+	clearMap["windows"] = func() {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+	return clearMap
+}
+
+func ClearScreen() {
+	clearFunction, ok := clearFuncs[runtime.GOOS]
+	if ok {
+		clearFunction()
+	}
+}
+
+//******************************************************************
 //		Run stuff
 //******************************************************************
 func main() {
+	// Wipe the current terminal of content for fresh play
+	ClearScreen()
+
+	// Start BubbleTea runtime
 	p := tea.NewProgram(initialModel())
 	if err := p.Start(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
