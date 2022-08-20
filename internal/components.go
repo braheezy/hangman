@@ -45,21 +45,26 @@ A single letter placement on the game board is a tile.
 
 _ _ _ _ _ _ <- several tiles. Together, they are a Board
 */
-
-type Tile string
-
 var BlankSpace = "_____"
 
-// Return a new stylized Tiles
-func NewTile(letter string) Tile {
-	var style = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#FAFAFA")).
-		Background(lipgloss.Color("#7D56F4")).
-		Width(5).
-		Align(lipgloss.Center)
+type Tile struct {
+	content string
+	style   lipgloss.Style
+}
 
-	return Tile(style.Render(letter))
+var tileStyle = lipgloss.NewStyle().
+	Bold(true).
+	Foreground(lipgloss.Color("#FAFAFA")). // white-ish
+	Background(lipgloss.Color("#7D56F4")). // purple-ish
+	Width(5).
+	Align(lipgloss.Center)
+
+// Return a new stylized Tiles
+func NewTile() Tile {
+	return Tile{
+		content: BlankSpace,
+		style:   tileStyle,
+	}
 }
 
 type Board []Tile
@@ -68,25 +73,34 @@ type Board []Tile
 func NewBoard(n int) Board {
 	b := make([]Tile, n)
 	for i := 0; i < n; i++ {
-		b[i] = NewTile(BlankSpace)
+		b[i] = NewTile()
 	}
 	return Board(b)
+}
+
+// Return the stylized view of the board
+func (b Board) View() string {
+	var result []string
+	for _, tile := range b {
+		result = append(result, tile.style.Render(tile.content))
+	}
+	return strings.Join(result, " ")
 }
 
 // Return a string representation of the board
 func (b Board) String() string {
 	var result []string
 	for _, tile := range b {
-		result = append(result, string(tile))
+		result = append(result, tile.content)
 	}
 
 	return strings.Join(result, " ")
 }
 
 // Check if a Tile is in the Board
-func (b Board) Contains(t Tile) bool {
+func (b Board) Contains(s string) bool {
 	for _, tile := range b {
-		if tile == t {
+		if tile.content == s {
 			return true
 		}
 	}
@@ -105,6 +119,7 @@ Something like:
 	A  R  T  U  W  P  C
 
 Or it could be fancy like
+
 qwertyuiop
 asdfghjkl
 zxcvbnm

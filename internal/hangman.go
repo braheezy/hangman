@@ -161,7 +161,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if len(ids) > 0 {
 					// The guess is a hit! Start flipping tiles
 					for _, id := range ids {
-						m.board[id] = NewTile(guess)
+						m.board[id].content = guess
 					}
 				} else {
 					// Wrong guess! increment graphics
@@ -184,7 +184,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.input.Reset()
 
 			// If there aren't any more blank tiles then word is filled! Winner!
-			if !m.board.Contains(NewTile(BlankSpace)) {
+			if !m.board.Contains(BlankSpace) {
 				m.banner.content = "Woo you win! Feel free to re-run the program to play again!"
 				return m, tea.Quit
 			}
@@ -211,7 +211,7 @@ func (m model) View() string {
 	s += "\n\n" + m.currentGraphic
 
 	// Render the board where the word is revealed as player makes correct guess
-	s += "\n\n" + m.board.String()
+	s += "\n\n" + m.board.View()
 
 	// Render the little input area for player guesses
 	s += "\n\n" + m.input.View()
