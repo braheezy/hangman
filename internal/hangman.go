@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"embed"
@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
-	"time"
 	"unicode"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -88,7 +87,6 @@ type model struct {
 
 func initialModel() model {
 	// Get random word from dictionary
-	rand.Seed(time.Now().UnixNano())
 	w := dictionary[rand.Intn(len(dictionary))]
 
 	// Make a new board based on word length
@@ -273,7 +271,7 @@ func ClearScreen() {
 //******************************************************************
 //		Run stuff
 //******************************************************************
-func main() {
+func Run() {
 	// Wipe the current terminal of content for fresh play
 	ClearScreen()
 

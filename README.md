@@ -9,7 +9,7 @@ This project exists to teach myself Go and learn about BubbleTea because it look
 ## Usage
 For now, clone the project and then run:
 ```console
-go run .
+go run main.go
 ```
 
 Enjoy!
