@@ -170,7 +170,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					graphic, err := m.graphicGenerator()
 					if err != nil {
 						// No more graphics to get. Player loses!
-						m.banner.content = "You lose :("
+						m.banner.content = fmt.Sprintf("You lose :(\nThe word we were looking for: %s", m.word)
 						// Looks tacky to leave the last character typed
 						// TODO: Surely this can be refactored
 						m.input.Reset()
