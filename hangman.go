@@ -81,7 +81,9 @@ type model struct {
 	input textinput.Model
 	// All the letters the player has guessed
 	guesses []string
-	err     error
+	// The banner area thing
+	banner Banner
+	err    error
 }
 
 func initialModel() model {
@@ -102,6 +104,8 @@ func initialModel() model {
 	gg := Graphics()
 	cg, _ := gg()
 
+	banner := NewBanner()
+
 	return model{
 		graphicGenerator: gg,
 		currentGraphic:   cg,
@@ -109,6 +113,7 @@ func initialModel() model {
 		board:            b,
 		input:            ti,
 		guesses:          g,
+		banner:           banner,
 		err:              nil,
 	}
 }
@@ -145,13 +150,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.input.Value() == "" {
 				break
 			}
-			// Reset err state
-			m.err = nil
+			// Reset Banner content
+			m.banner.content = ""
 			// Pull out the letter
 			guess := strings.ToUpper(m.input.Value())
 			// Can't guess letters already guessed
 			if slices.Contains(m.guesses, guess) {
-				m.err = errors.New("you already guessed that. try again")
+				m.banner.content = "Silly, you already guessed that! Try again"
 			} else {
 				// See if the guess is one of the letters in the word
 				ids := Indexes(m.word, guess)
@@ -165,7 +170,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					graphic, err := m.graphicGenerator()
 					if err != nil {
 						// No more graphics to get. Player loses!
-						m.err = errors.New("you lose")
+						m.banner.content = "You lose :("
 						// Looks tacky to leave the last character typed
 						// TODO: Surely this can be refactored
 						m.input.Reset()
@@ -182,7 +187,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			// If there aren't any more blank tiles then word is filled! Winner!
 			if !m.board.Contains(NewTile(BlankSpace)) {
-				m.err = errors.New("you win! feel free to re-run the program to play again")
+				m.banner.content = "Woo you win! Feel free to re-run the program to play again!"
 				return m, tea.Quit
 			}
 		}
@@ -222,6 +227,9 @@ func (m model) View() string {
 	if m.err != nil {
 		s += fmt.Sprintf("%v\n", m.err)
 	}
+	if m.banner.content != "" {
+		s += m.banner.String()
+	}
 
 	// footer
 	s += "\nPress ESC or Ctrl+C to quit.\n"
@@ -239,11 +247,14 @@ var clearFuncs map[string]func() = initClearMap()
 func initClearMap() map[string]func() {
 	clearMap := make(map[string]func())
 
+	// For each operating system, define a function that will clear the screen.
 	clearMap["linux"] = func() {
 		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	}
+	clearMap["darwin"] = clearMap["linux"]
+
 	clearMap["windows"] = func() {
 		cmd := exec.Command("cmd", "/c", "cls")
 		cmd.Stdout = os.Stdout
