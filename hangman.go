@@ -232,7 +232,7 @@ func (m model) View() string {
 	}
 
 	// footer
-	s += "\nPress ESC or Ctrl+C to quit.\n"
+	s += "\n\nPress ESC or Ctrl+C to quit.\n"
 
 	return s
 }

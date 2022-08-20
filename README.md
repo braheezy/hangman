@@ -1,5 +1,8 @@
+![demo](./assets/hangman_demo1.png)
+
+
 # Hangman
-This is Go TUI [Hangman](https://www.wikihow.com/Play-Hangman) game built with the lovely [BubbleTea](https://github.com/charmbracelet/bubbletea) framework.
+This is a Go TUI [Hangman](https://www.wikihow.com/Play-Hangman) game built with the lovely [BubbleTea](https://github.com/charmbracelet/bubbletea) framework.
 
 This project exists to teach myself Go and learn about BubbleTea because it looks like an understandable, powerful, and good looking TUI framework. My past attempt at a [TUI in Python](https://github.com/braheezy/pyrdle) didn't go so well. It's already going much better with this project :)
 
@@ -23,8 +26,11 @@ The following is to be implemented:
         - [ ] Hangman graphic
         - [ ] User input area
         - [ ] Header/Footer
-        - [ ] Game message area. Distinct warnings vs success message styles
+        - [ ] Guesses
+        - [ ] Game banner area. Distinct warnings vs success message styles
 - [x] Clear terminal screen :boom:
     - Before launching, clear the entire screen for maximum cleanliness
 - [x] Sanitize better :earth_americas:
     - Characters like `.` and nothing are deemed okay. That's stupid
+- [x] Show word on loss
+    - Don't leave them hanging!
