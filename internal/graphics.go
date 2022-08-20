@@ -81,6 +81,7 @@ func Graphics() func() (string, error) {
 
 	return func() (string, error) {
 		if i == cap {
+			// no more graphics. Throw error
 			return "", errors.New("")
 		} else {
 			nextGraphic := graphics[i]

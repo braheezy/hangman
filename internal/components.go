@@ -6,6 +6,33 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+//******************************************************************
+//		Banner stuff
+//******************************************************************
+
+type Banner struct {
+	content string
+	style   lipgloss.Style
+}
+
+func NewBanner() Banner {
+	return Banner{
+		content: "",
+		style: lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("#FAFAFA")),
+	}
+}
+
+// Return a string representation of the banner
+func (b Banner) String() string {
+	return string(b.style.Render(b.content))
+}
+
+//******************************************************************
+//		Board & Tile stuff
+//******************************************************************
+
 /*
 A single letter placement on the game board is a tile.
 
@@ -65,3 +92,22 @@ func (b Board) Contains(t Tile) bool {
 	}
 	return false
 }
+
+//******************************************************************
+//		guesses view stuff
+//******************************************************************
+
+/*
+A view into the letters the player has already guessed.
+
+Something like:
+
+	A  R  T  U  W  P  C
+
+Or it could be fancy like
+qwertyuiop
+asdfghjkl
+zxcvbnm
+
+And we mark off letters as they are chosen
+*/
