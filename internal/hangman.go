@@ -89,9 +89,9 @@ type model struct {
 	// All the letters the player has guessed
 	userGuesses []string
 	// All the possible letters that can be guessed
-	letters *Letters
-	// The banner area thing
-	banner Banner
+	keyboard *Keyboard
+	// The notice area thing
+	notice Banner
 	err    error
 }
 
@@ -112,9 +112,9 @@ func initialModel() model {
 	gg := Graphics()
 	cg, _ := gg()
 
-	banner := NewBanner()
+	notice := NewNotice()
 
-	letters := NewLetters()
+	keyboard := NewKeyboard()
 
 	return model{
 		graphicGenerator: gg,
@@ -123,8 +123,8 @@ func initialModel() model {
 		board:            b,
 		input:            ti,
 		userGuesses:      g,
-		letters:          &letters,
-		banner:           banner,
+		keyboard:         &keyboard,
+		notice:           notice,
 		err:              nil,
 	}
 }
@@ -163,27 +163,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.input.Value() == "" {
 				break
 			}
-			// Reset Banner content
-			m.banner.content = ""
+			// Reset notice content
+			m.notice.text = ""
 			// Pull out the letter
 			guess := strings.ToUpper(m.input.Value())
 			// Can't guess letters already guessed
 			if slices.Contains(m.userGuesses, guess) {
-				m.banner.content = "Silly, you already guessed that! Try again"
+				m.notice.text = "Silly, you already guessed that! Try again"
 			} else {
 				// See if the guess is one of the letters in the word
 				ids := Indexes(m.word, guess)
 				if len(ids) > 0 {
 					// The guess is a hit! Start flipping tiles
 					for _, id := range ids {
-						m.board[id].content = guess
+						m.board[id].letter = guess
 					}
 				} else {
 					// Wrong guess! increment graphics
 					graphic, err := m.graphicGenerator()
 					if err != nil {
 						// No more graphics to get. Player loses!
-						m.banner.content = fmt.Sprintf("You lose :(\nThe word we were looking for: %s", m.word)
+						m.notice.text = fmt.Sprintf("You lose :(\nThe word we were looking for: %s", m.word)
 						// Looks tacky to leave the last character typed
 						// TODO: Surely this can be refactored
 						m.input.Reset()
@@ -194,14 +194,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				// Remember userGuesses for next loop
 				m.userGuesses = append(m.userGuesses, guess)
-				m.letters.FlipOn(guess)
+				m.keyboard.FlipOn(guess)
 			}
 			// Clear the input area
 			m.input.Reset()
 
 			// If there aren't any more blank tiles then word is filled! Winner!
-			if !m.board.Contains(BlankSpace) {
-				m.banner.content = "Woo you win! Feel free to re-run the program to play again!"
+			if !m.board.Contains(blankBoardTile) {
+				m.notice.text = "Woo you win! Feel free to re-run the program to play again!"
 				return m, tea.Quit
 			}
 		}
@@ -226,7 +226,7 @@ func (m model) View() string {
 	s := "Play Hangman!\n\n"
 
 	// Current hangman graphic is replaced as player makes incorrect guesses
-	s += lipgloss.JoinHorizontal(lipgloss.Center, m.currentGraphic, m.letters.View())
+	s += lipgloss.JoinHorizontal(lipgloss.Center, m.currentGraphic, m.keyboard.View())
 
 	// Render the board where the word is revealed as player makes correct guess
 	s += "\n\n" + m.board.View()
@@ -242,8 +242,8 @@ func (m model) View() string {
 	if m.err != nil {
 		s += fmt.Sprintf("%v\n", m.err)
 	}
-	if m.banner.content != "" {
-		s += m.banner.String()
+	if m.notice.text != "" {
+		s += m.notice.View()
 	}
 
 	// footer
