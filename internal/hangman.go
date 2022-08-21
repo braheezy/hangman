@@ -92,7 +92,10 @@ type model struct {
 	keyboard *Keyboard
 	// The notice area thing
 	notice Banner
-	err    error
+	// Did game end?
+	gameOver bool
+	// Any errors caught go here and should be reported somewhere
+	err error
 }
 
 func initialModel() model {
@@ -125,6 +128,7 @@ func initialModel() model {
 		userGuesses:      g,
 		keyboard:         &keyboard,
 		notice:           notice,
+		gameOver:         false,
 		err:              nil,
 	}
 }
@@ -149,6 +153,52 @@ func Indexes(s string, letter string) []int {
 	return indexes
 }
 
+// Update model with user guess
+func handleGuess(m *model) {
+	// Did the player enter anything before pressing return?
+	if m.input.Value() == "" {
+		return
+	}
+	// Reset notice content for next render
+	m.notice.text = ""
+	// Pull out the letter
+	guess := strings.ToUpper(m.input.Value())
+	// Can't guess letters already guessed
+	if slices.Contains(m.userGuesses, guess) {
+		m.notice.text = "Silly, you already guessed that! Try again"
+	} else {
+		// See if the guess is one of the letters in the word
+		ids := Indexes(m.word, guess)
+		if len(ids) > 0 {
+			// The guess is a hit! Start "flipping" tiles
+			for _, id := range ids {
+				m.board[id].letter = guess
+			}
+		} else {
+			// Wrong guess! increment graphics
+			graphic, err := m.graphicGenerator()
+			if err != nil {
+				// No more graphics to get. Player loses!
+				m.notice.text = fmt.Sprintf("You lose :(\nThe word we were looking for: %s", m.word)
+				m.gameOver = true
+			} else {
+				m.currentGraphic = graphic
+			}
+		}
+		// Remember userGuesses for next loop
+		m.userGuesses = append(m.userGuesses, guess)
+		m.keyboard.FlipOn(guess)
+	}
+	// Clear the input area
+	m.input.Reset()
+
+	// If there aren't any more blank tiles then word is filled! Winner!
+	if !m.board.Contains(blankBoardTile) {
+		m.notice.text = "Woo you win! Feel free to re-run the program to play again!"
+		m.gameOver = true
+	}
+}
+
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -159,49 +209,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		// The player has guessed something. Process it.
 		case "enter":
-			// Did the player enter anything?
-			if m.input.Value() == "" {
-				break
-			}
-			// Reset notice content
-			m.notice.text = ""
-			// Pull out the letter
-			guess := strings.ToUpper(m.input.Value())
-			// Can't guess letters already guessed
-			if slices.Contains(m.userGuesses, guess) {
-				m.notice.text = "Silly, you already guessed that! Try again"
-			} else {
-				// See if the guess is one of the letters in the word
-				ids := Indexes(m.word, guess)
-				if len(ids) > 0 {
-					// The guess is a hit! Start flipping tiles
-					for _, id := range ids {
-						m.board[id].letter = guess
-					}
-				} else {
-					// Wrong guess! increment graphics
-					graphic, err := m.graphicGenerator()
-					if err != nil {
-						// No more graphics to get. Player loses!
-						m.notice.text = fmt.Sprintf("You lose :(\nThe word we were looking for: %s", m.word)
-						// Looks tacky to leave the last character typed
-						// TODO: Surely this can be refactored
-						m.input.Reset()
-						return m, tea.Quit
-					} else {
-						m.currentGraphic = graphic
-					}
-				}
-				// Remember userGuesses for next loop
-				m.userGuesses = append(m.userGuesses, guess)
-				m.keyboard.FlipOn(guess)
-			}
-			// Clear the input area
-			m.input.Reset()
-
-			// If there aren't any more blank tiles then word is filled! Winner!
-			if !m.board.Contains(blankBoardTile) {
-				m.notice.text = "Woo you win! Feel free to re-run the program to play again!"
+			handleGuess(&m)
+			if m.gameOver {
 				return m, tea.Quit
 			}
 		}
