@@ -68,12 +68,12 @@ func NewTile(l string, s lipgloss.Style) Tile {
 //
 // ******************************************************
 // What to show as "blank" before the tile has been guessed
-var blankBoardTile = "_____"
+var blankBoardTile = " "
 
 var boardTileStyle = lipgloss.NewStyle().
 	Bold(true).
-	Foreground(lipgloss.Color(Colors["Surface0"])).
-	Background(lipgloss.Color(Colors["Blue"])).
+	Foreground(lipgloss.Color(Colors["Text"])).
+	Background(lipgloss.Color(Colors["StrongMauve"])).
 	Width(5).
 	Align(lipgloss.Center)
 
@@ -90,14 +90,15 @@ func NewBoard(n int) Board {
 }
 
 // Return the stylized view of the board
-func (b Board) View() string {
+// Choose how you want the Tiles to separated from each other
+func (b Board) View(sep string) string {
 	// Render each board tile and stick in a list
 	var result []string
 	for _, tile := range b {
 		result = append(result, tile.style.Render(tile.letter))
 	}
 	// Return one giant string that is the board
-	return strings.Join(result, " ")
+	return strings.Join(result, sep)
 }
 
 // Check if a Tile is in the Board
@@ -170,7 +171,7 @@ func (keyboard Keyboard) View() string {
 	var result []string
 	// Each row is a Board, so it can be easily Viewed
 	for _, row := range keyboard.alphabet {
-		result = append(result, row.View())
+		result = append(result, row.View(""))
 	}
 
 	return lipgloss.NewStyle().

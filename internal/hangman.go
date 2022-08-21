@@ -238,7 +238,7 @@ func (m model) View() string {
 	s += lipgloss.JoinHorizontal(lipgloss.Center, m.currentGraphic, m.keyboard.View())
 
 	// Render the board where the word is revealed as player makes correct guess
-	s += "\n\n" + m.board.View()
+	s += "\n\n" + m.board.View(" ")
 
 	// Render the little input area for player guesses
 	s += "\n\n" + m.input.View()
