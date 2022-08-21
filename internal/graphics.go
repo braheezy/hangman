@@ -9,7 +9,7 @@ import "errors"
 var graphics = [8]string{`
     ╭───────╮
     │       │
-    │
+    │         
     │
     │
     │
@@ -18,7 +18,7 @@ var graphics = [8]string{`
     ╭───────╮
     │       │
     │       ◯
-    │
+    │         
     │
     │
 	`,
@@ -26,7 +26,7 @@ var graphics = [8]string{`
     ╭───────╮
     │       │
     │       ◯
-    │       │
+    │       │ 
     │
     │
 	`,
