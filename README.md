@@ -1,8 +1,8 @@
-![demo](./assets/hangman_demo1.png)
+![demo](./assets/demo.gif)
 
 
 # Hangman
-This is a Go TUI [Hangman](https://www.wikihow.com/Play-Hangman) game built with the lovely [BubbleTea](https://github.com/charmbracelet/bubbletea) framework.
+A Go TUI [Hangman](https://www.wikihow.com/Play-Hangman) game built with the lovely [BubbleTea](https://github.com/charmbracelet/bubbletea) framework.
 
 This project exists to teach myself Go and learn about BubbleTea because it looks like an understandable, powerful, and good looking TUI framework. My past attempt at a [TUI in Python](https://github.com/braheezy/pyrdle) didn't go so well. It's already going much better with this project :)
 
@@ -18,7 +18,7 @@ Enjoy!
 The following is to be implemented:
 - [x] End game lose condition :heavy_multiplication_x:
     - Yes, right now if you can't solve the word, the program crashes
-- [ ] Show guessed letters :b::a:
+- [x] Show guessed letters :b::a:
     - The user can't see which letters are guessed which is awkward when playing
 - [ ] Beautification :sunglasses:
     - The Board is the only thing with style right now
