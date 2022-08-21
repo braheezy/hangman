@@ -21,16 +21,18 @@ The following is to be implemented:
 - [x] Show guessed letters :b::a:
     - The user can't see which letters are guessed which is awkward when playing
 - [ ] Beautification :sunglasses:
-    - The Board is the only thing with style right now
     - Add Style to:
         - [ ] Hangman graphic
         - [ ] User input area
         - [ ] Header/Footer
         - [ ] Guesses
-        - [ ] Game banner area. Distinct warnings vs success message styles
+        - [ ] Banner area and the various messages that appear there
 - [x] Clear terminal screen :boom:
     - Before launching, clear the entire screen for maximum cleanliness
 - [x] Sanitize better :earth_americas:
     - Characters like `.` and nothing are deemed okay. That's stupid
 - [x] Show word on loss
     - Don't leave them hanging!
+- [ ] Support light mode terminals
+    - It works okay but it could be better for heathens using light color themes
+
