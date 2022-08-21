@@ -13,14 +13,18 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"golang.org/x/exp/slices"
 )
 
 type errMsg error
 
-//******************************************************************
-// 		Dictionary stuff
-//******************************************************************
+// ******************************************************************
+//
+//	Dictionary stuff
+//
+// ******************************************************************
+//
 //go:embed dictionary.txt
 var f embed.FS
 var DictionaryFile, _ = f.ReadFile("dictionary.txt")
@@ -37,9 +41,11 @@ func LoadWords() (words []string, err error) {
 
 var dictionary, _ = LoadWords()
 
-//******************************************************************
-//		Handle player input
-//******************************************************************
+// ******************************************************************
+//
+//	Handle player input
+//
+// ******************************************************************
 // A 1-character text input area for the player to make letter guesses
 func newInput() textinput.Model {
 	ti := textinput.New()
@@ -64,9 +70,11 @@ func validateInput() textinput.ValidateFunc {
 	}
 }
 
-//******************************************************************
-//		Model stuff
-//******************************************************************
+// ******************************************************************
+//
+//	Model stuff
+//
+// ******************************************************************
 type model struct {
 	// Call this repeatedly to get the next graphic
 	graphicGenerator func() (string, error)
@@ -79,7 +87,9 @@ type model struct {
 	// Text area where player types their guesses
 	input textinput.Model
 	// All the letters the player has guessed
-	guesses []string
+	userGuesses []string
+	// All the possible letters that can be guessed
+	letters *Letters
 	// The banner area thing
 	banner Banner
 	err    error
@@ -95,7 +105,7 @@ func initialModel() model {
 	// New input area
 	ti := newInput()
 
-	// Empty list to hold guesses
+	// Empty list to hold userGuesses
 	var g []string
 
 	// Graphic stuff
@@ -104,13 +114,16 @@ func initialModel() model {
 
 	banner := NewBanner()
 
+	letters := NewLetters()
+
 	return model{
 		graphicGenerator: gg,
 		currentGraphic:   cg,
 		word:             w,
 		board:            b,
 		input:            ti,
-		guesses:          g,
+		userGuesses:      g,
+		letters:          &letters,
 		banner:           banner,
 		err:              nil,
 	}
@@ -120,9 +133,11 @@ func (m model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-//******************************************************************
-//		Update stuff
-//******************************************************************
+// ******************************************************************
+//
+//	Update stuff
+//
+// ******************************************************************
 // Return list of indexes where letters occur in string
 func Indexes(s string, letter string) []int {
 	var indexes []int
@@ -153,7 +168,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Pull out the letter
 			guess := strings.ToUpper(m.input.Value())
 			// Can't guess letters already guessed
-			if slices.Contains(m.guesses, guess) {
+			if slices.Contains(m.userGuesses, guess) {
 				m.banner.content = "Silly, you already guessed that! Try again"
 			} else {
 				// See if the guess is one of the letters in the word
@@ -177,8 +192,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						m.currentGraphic = graphic
 					}
 				}
-				// Remember guesses for next loop
-				m.guesses = append(m.guesses, guess)
+				// Remember userGuesses for next loop
+				m.userGuesses = append(m.userGuesses, guess)
+				m.letters.FlipOn(guess)
 			}
 			// Clear the input area
 			m.input.Reset()
@@ -200,15 +216,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-//******************************************************************
-//		View stuff
-//******************************************************************
+// ******************************************************************
+//
+//	View stuff
+//
+// ******************************************************************
 func (m model) View() string {
 	// Title area
-	s := "Play Hangman!"
+	s := "Play Hangman!\n\n"
 
 	// Current hangman graphic is replaced as player makes incorrect guesses
-	s += "\n\n" + m.currentGraphic
+	s += lipgloss.JoinHorizontal(lipgloss.Center, m.currentGraphic, m.letters.View())
 
 	// Render the board where the word is revealed as player makes correct guess
 	s += "\n\n" + m.board.View()
@@ -221,7 +239,6 @@ func (m model) View() string {
 
 	s += "\n"
 
-	// TODO: Don't do this lol we're reusing the err thing as a changeable text area to tell the user stuff
 	if m.err != nil {
 		s += fmt.Sprintf("%v\n", m.err)
 	}
@@ -235,10 +252,12 @@ func (m model) View() string {
 	return s
 }
 
-//******************************************************************
+// ******************************************************************
+//
 //		Clear screen logic
 //	Thanks: https://stackoverflow.com/questions/22891644/how-can-i-clear-the-terminal-screen-in-go
-//******************************************************************
+//
+// ******************************************************************
 // Store clear commands for different OSes
 var clearFuncs map[string]func() = initClearMap()
 
@@ -268,9 +287,11 @@ func ClearScreen() {
 	}
 }
 
-//******************************************************************
-//		Run stuff
-//******************************************************************
+// ******************************************************************
+//
+//	Run stuff
+//
+// ******************************************************************
 func Run() {
 	// Wipe the current terminal of content for fresh play
 	ClearScreen()
