@@ -1,5 +1,6 @@
 package internal
 
+// https://github.com/catppuccin/catppuccin
 var Colors = map[string]string{
 	"Rosewater":   "#f5e0dc",
 	"Flamingo":    "#f2cdcd",
