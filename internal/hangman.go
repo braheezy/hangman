@@ -94,8 +94,10 @@ type model struct {
 	notice Banner
 	// Did game end?
 	gameOver bool
-	// Title banner stuff
+	// Title banner
 	title Banner
+	// Footer banner area
+	footer Banner
 	// Any errors caught go here and should be reported somewhere
 	err error
 }
@@ -123,6 +125,8 @@ func initialModel() model {
 
 	title := NewTitle()
 
+	footer := NewFooter()
+
 	return model{
 		graphicGenerator: graphicGen,
 		currentGraphic:   currentGraphic,
@@ -134,6 +138,7 @@ func initialModel() model {
 		notice:           notice,
 		gameOver:         false,
 		title:            title,
+		footer:           footer,
 		err:              nil,
 	}
 }
@@ -261,7 +266,7 @@ func (m model) View() string {
 	}
 
 	// footer
-	s += "\n\nPress ESC or Ctrl+C to quit.\n"
+	s += m.footer.View()
 
 	return s
 }

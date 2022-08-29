@@ -40,6 +40,22 @@ func NewTitle() Banner {
 	}
 }
 
+// ******************************************************
+//
+//		Footer stuff
+//	The top greeter
+//
+// ******************************************************
+var footerStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color(Colors["Text"]))
+
+func NewFooter() Banner {
+	return Banner{
+		text:  "Press ESC or Ctrl+C to quit.",
+		style: footerStyle,
+	}
+}
+
 //******************************************************
 //		Notice stuff
 //	This area displays game messages to the player
