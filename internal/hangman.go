@@ -94,41 +94,46 @@ type model struct {
 	notice Banner
 	// Did game end?
 	gameOver bool
+	// Title banner stuff
+	title Banner
 	// Any errors caught go here and should be reported somewhere
 	err error
 }
 
 func initialModel() model {
 	// Get random word from dictionary
-	w := dictionary[rand.Intn(len(dictionary))]
+	word := dictionary[rand.Intn(len(dictionary))]
 
 	// Make a new board based on word length
-	b := NewBoard(len(w))
+	board := NewBoard(len(word))
 
 	// New input area
-	ti := newInput()
+	textInput := newInput()
 
 	// Empty list to hold userGuesses
-	var g []string
+	var userGuesses []string
 
 	// Graphic stuff
-	gg := Graphics()
-	cg, _ := gg()
+	graphicGen := Graphics()
+	currentGraphic, _ := graphicGen()
 
 	notice := NewNotice()
 
 	keyboard := NewKeyboard()
 
+	title := NewTitle()
+
 	return model{
-		graphicGenerator: gg,
-		currentGraphic:   cg,
-		word:             w,
-		board:            b,
-		input:            ti,
-		userGuesses:      g,
+		graphicGenerator: graphicGen,
+		currentGraphic:   currentGraphic,
+		word:             word,
+		board:            board,
+		input:            textInput,
+		userGuesses:      userGuesses,
 		keyboard:         &keyboard,
 		notice:           notice,
 		gameOver:         false,
+		title:            title,
 		err:              nil,
 	}
 }
@@ -153,7 +158,7 @@ func Indexes(s string, letter string) []int {
 	return indexes
 }
 
-// Update model with user guess
+// Update model based on user guess
 func handleGuess(m *model) {
 	// Did the player enter anything before pressing return?
 	if m.input.Value() == "" {
@@ -232,7 +237,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // ******************************************************************
 func (m model) View() string {
 	// Title area
-	s := "Play Hangman!\n\n"
+	s := m.title.View()
 
 	// Current hangman graphic is replaced as player makes incorrect guesses
 	s += lipgloss.JoinHorizontal(lipgloss.Center, m.currentGraphic, m.keyboard.View())

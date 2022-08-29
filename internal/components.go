@@ -23,6 +23,23 @@ func (b Banner) View() string {
 	return b.style.Render(b.text)
 }
 
+// ******************************************************
+//
+//		Title stuff
+//	The top greeter
+//
+// ******************************************************
+var titleStyle = lipgloss.NewStyle().
+	Bold(true).
+	Foreground(lipgloss.Color(Colors["Text"]))
+
+func NewTitle() Banner {
+	return Banner{
+		text:  "Play Hangman!",
+		style: titleStyle,
+	}
+}
+
 //******************************************************
 //		Notice stuff
 //	This area displays game messages to the player
@@ -137,7 +154,7 @@ var letterOffStyle = lipgloss.NewStyle().
 
 var letterOnStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color(Colors["Mauve"])).
-	Background(lipgloss.Color(Colors["Base"])).
+	Background(lipgloss.Color(Colors["Overlay0"])).
 	Width(3).
 	Align(lipgloss.Center).
 	Bold(true)
