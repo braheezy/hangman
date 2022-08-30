@@ -110,7 +110,7 @@ var blankBoardTile = " "
 
 var boardTileStyle = lipgloss.NewStyle().
 	Bold(true).
-	Foreground(lipgloss.Color(Colors["Text"])).
+	Foreground(lipgloss.Color(Colors["Pink"])).
 	Background(lipgloss.Color(Colors["StrongMauve"])).
 	Width(5).
 	Align(lipgloss.Center)
