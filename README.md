@@ -24,11 +24,11 @@ The following is to be implemented:
     - Add Style to:
         - [x] Hangman graphic
         - [x] Hangman flashing on guesses
-        - [ ] User input area
+        - [x] User input area
         - [x] Header
-        - [ ] Footer
+        - [x] Footer
         - [x] Guesses
-        - [ ] Banner area and the various messages that appear there
+        - [x] Banner area and the various messages that appear there
 - [x] Clear terminal screen :boom:
     - Before launching, clear the entire screen for maximum cleanliness
 - [x] Sanitize better :earth_americas:
@@ -38,3 +38,11 @@ The following is to be implemented:
 - [ ] Support light mode terminals :angel:
     - It works okay but it could be better for heathens using light color themes
     - Lipgloss has `AdaptiveColor` for this support
+- [ ] Handle screen resizing better :straight_ruler:
+    - There's a `tea.WindowSizeMsg` that can be caught in `Update()` and you can save me window dimensions to model:
+
+          m.height = msg.Height
+          m.width = msg.Width
+    - In `View()` use knowledge of window dimensions to smartly draw things:
+        - If the keyboard doesn't fit, remove it
+        - If the board tiles are too long, wrap them. This has been seen with long (10+ characters) words to guess.
