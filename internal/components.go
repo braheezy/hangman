@@ -6,21 +6,30 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-//******************************************************************
-//		Banner stuff
-//******************************************************************
-
-// A banner is for strings. Style how you want.
-type Banner struct {
+// ******************************************************************
+//
+//	PrettyString stuff
+//
+// Take one or more characters and style with lipgloss
+// ******************************************************************
+type PrettyString struct {
 	// The raw text in the banner
 	text string
 	// The style to apply to the text
 	style lipgloss.Style
 }
 
+// Return a new stylized Tile
+func NewPrettyString(t string, s lipgloss.Style) PrettyString {
+	return PrettyString{
+		text:  t,
+		style: s,
+	}
+}
+
 // Return the stylized view of the banner
-func (b Banner) View() string {
-	return b.style.Render(b.text)
+func (s PrettyString) View() string {
+	return s.style.Render(s.text)
 }
 
 // ******************************************************
@@ -37,8 +46,8 @@ var titleStyle = lipgloss.NewStyle().
 	PaddingLeft(2).
 	PaddingRight(2)
 
-func NewTitle() Banner {
-	return Banner{
+func NewTitle() PrettyString {
+	return PrettyString{
 		text:  "Hangman\nCan you save this criminal?",
 		style: titleStyle,
 	}
@@ -53,55 +62,34 @@ func NewTitle() Banner {
 var footerStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color(Colors["Text"]))
 
-func NewFooter() Banner {
-	return Banner{
+func NewFooter() PrettyString {
+	return PrettyString{
 		text:  "Press ESC or Ctrl+C to quit.",
 		style: footerStyle,
 	}
 }
 
-//******************************************************
+// ******************************************************
+//
 //		Notice stuff
 //	This area displays game messages to the player
-//******************************************************
-
+//
+// ******************************************************
 var noticeStyle = lipgloss.NewStyle().
 	Bold(true).
 	Foreground(lipgloss.Color(Colors["Text"]))
 
-func NewNotice() Banner {
-	return Banner{
+func NewNotice() PrettyString {
+	return PrettyString{
 		text:  "",
 		style: noticeStyle,
-	}
-}
-
-//******************************************************************
-//		Tile stuff
-//  A Tile can draw 1 letter and be stylized. Very flexible.
-//******************************************************************
-
-type Tile struct {
-	// The single "letter" in this tile
-	// The definition of letter is real loose...
-	letter string
-	// The style to apply to the letter
-	style lipgloss.Style
-}
-
-// Return a new stylized Tile
-func NewTile(l string, s lipgloss.Style) Tile {
-	return Tile{
-		letter: l,
-		style:  s,
 	}
 }
 
 // ******************************************************
 //
 //			Board stuff
-//	 Where the correct letters are hidden and revealed on
-//	 correct player guesses
+//	A horizontal grouping of PrettyStrings
 //
 // ******************************************************
 // What to show as "blank" before the tile has been guessed
@@ -114,14 +102,14 @@ var boardTileStyle = lipgloss.NewStyle().
 	Width(5).
 	Align(lipgloss.Center)
 
-// The Board is just a collection of Tiles
-type Board []Tile
+// The Board is just a collection of PrettyStrings
+type Board []PrettyString
 
-// Make a new Board of n blankBoardTile
-func NewBoard(n int) Board {
-	b := make([]Tile, n)
+// Make a new Board of n blank PrettyStrings
+func NewBoard(n int, s lipgloss.Style) Board {
+	b := make([]PrettyString, n)
 	for i := 0; i < n; i++ {
-		b[i] = NewTile(blankBoardTile, boardTileStyle)
+		b[i] = NewPrettyString(blankBoardTile, s)
 	}
 	return Board(b)
 }
@@ -132,7 +120,7 @@ func (b Board) View(sep string) string {
 	// Render each board tile and stick in a list
 	var result []string
 	for _, tile := range b {
-		result = append(result, tile.style.Render(tile.letter))
+		result = append(result, tile.View())
 	}
 	// Return one giant string that is the board
 	return strings.Join(result, sep)
@@ -142,22 +130,20 @@ func (b Board) View(sep string) string {
 func (b Board) Contains(s string) bool {
 	// Crawl through the board and see if there's a hit
 	for _, tile := range b {
-		if tile.letter == s {
+		if tile.text == s {
 			return true
 		}
 	}
 	return false
 }
 
-//******************************************************************
-//		Letters view stuff
-//******************************************************************
-
-/*
-A view into the letters the player has already guessed.
-
-Currently, it's a "keyboard" and the letters are marked off as they are guessed.
-*/
+// ******************************************************************
+//
+//			Letters view stuff
+//	 A view into the letters the player has already guessed.
+//	 It's a "keyboard" and the letters are marked off
+//
+// ******************************************************************
 type Keyboard struct {
 	// The keyboard alphabet to show. Each row will be a Board
 	alphabet []Board
@@ -186,14 +172,14 @@ var keyboardRows = [][]string{
 }
 
 func NewKeyboard() Keyboard {
-	// Build up a 2d array of Tiles
+	// Each row in the Keyboard is a "Board"
 	var alphabetTiles = make([]Board, 3)
 	for i, row := range keyboardRows {
-		alphabetTiles[i] = make(Board, len(row))
+		alphabetTiles[i] = NewBoard(len(row), letterOffStyle)
 		for j, letter := range row {
 			// Create the new Tile, ensuring initial style is off
-			tile := NewTile(letter, letterOffStyle)
-			alphabetTiles[i][j] = tile
+			// tile := NewTile(letter, letterOffStyle)
+			alphabetTiles[i][j].text = letter
 		}
 	}
 	return Keyboard{
@@ -224,10 +210,42 @@ func (keyboard Keyboard) View() string {
 func (letters *Keyboard) FlipOn(letter string) {
 	for i, row := range letters.alphabet {
 		for j, tile := range row {
-			if tile.letter == letter {
+			if tile.text == letter {
 				letters.alphabet[i][j].style = letters.onStyle
 				break
 			}
 		}
+	}
+}
+
+// ******************************************************************
+//
+//	Graphic view
+//
+// The hangman character.
+// A "picture" from the graphics file, stuffed into a Tile
+// ******************************************************************
+type GraphicView struct {
+	// The graphic to show. Changes when player is wrong
+	currentGraphic PrettyString
+	// Call this repeatedly to get the next graphic
+	graphicGenerator func() (string, error)
+}
+
+var graphicStyle = lipgloss.NewStyle()
+
+func NewGraphicView() GraphicView {
+	graphicGen := Graphics()
+	currentGraphic, err := graphicGen()
+	if err != nil {
+		panic(err)
+	}
+
+	return GraphicView{
+		currentGraphic: PrettyString{
+			text:  currentGraphic,
+			style: graphicStyle,
+		},
+		graphicGenerator: graphicGen,
 	}
 }

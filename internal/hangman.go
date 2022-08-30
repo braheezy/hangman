@@ -76,10 +76,8 @@ func validateInput() textinput.ValidateFunc {
 //
 // ******************************************************************
 type model struct {
-	// Call this repeatedly to get the next graphic
-	graphicGenerator func() (string, error)
-	// The graphic to show. Changes when player is wrong
-	currentGraphic string
+	// Struct for all things related to the hangman graphic
+	graphicView GraphicView
 	// The word the player is trying to guess
 	word string
 	// The "board" under the graphic where player guesses are shown
@@ -91,13 +89,13 @@ type model struct {
 	// All the possible letters that can be guessed
 	keyboard *Keyboard
 	// The notice area thing
-	notice Banner
+	notice PrettyString
 	// Did game end?
 	gameOver bool
 	// Title banner
-	title Banner
+	title PrettyString
 	// Footer banner area
-	footer Banner
+	footer PrettyString
 	// Any errors caught go here and should be reported somewhere
 	err error
 }
@@ -107,7 +105,7 @@ func initialModel() model {
 	word := dictionary[rand.Intn(len(dictionary))]
 
 	// Make a new board based on word length
-	board := NewBoard(len(word))
+	board := NewBoard(len(word), boardTileStyle)
 
 	// New input area
 	textInput := newInput()
@@ -116,8 +114,7 @@ func initialModel() model {
 	var userGuesses []string
 
 	// Graphic stuff
-	graphicGen := Graphics()
-	currentGraphic, _ := graphicGen()
+	graphicView := NewGraphicView()
 
 	notice := NewNotice()
 
@@ -128,18 +125,17 @@ func initialModel() model {
 	footer := NewFooter()
 
 	return model{
-		graphicGenerator: graphicGen,
-		currentGraphic:   currentGraphic,
-		word:             word,
-		board:            board,
-		input:            textInput,
-		userGuesses:      userGuesses,
-		keyboard:         &keyboard,
-		notice:           notice,
-		gameOver:         false,
-		title:            title,
-		footer:           footer,
-		err:              nil,
+		graphicView: graphicView,
+		word:        word,
+		board:       board,
+		input:       textInput,
+		userGuesses: userGuesses,
+		keyboard:    &keyboard,
+		notice:      notice,
+		gameOver:    false,
+		title:       title,
+		footer:      footer,
+		err:         nil,
 	}
 }
 
@@ -182,17 +178,17 @@ func handleGuess(m *model) {
 		if len(ids) > 0 {
 			// The guess is a hit! Start "flipping" tiles
 			for _, id := range ids {
-				m.board[id].letter = guess
+				m.board[id].text = guess
 			}
 		} else {
 			// Wrong guess! increment graphics
-			graphic, err := m.graphicGenerator()
+			graphic, err := m.graphicView.graphicGenerator()
 			if err != nil {
 				// No more graphics to get. Player loses!
 				m.notice.text = fmt.Sprintf("You lose :(\nThe word you were looking for: %s", m.word)
 				m.gameOver = true
 			} else {
-				m.currentGraphic = graphic
+				m.graphicView.currentGraphic.text = graphic
 			}
 		}
 		// Remember userGuesses for next loop
@@ -246,7 +242,7 @@ func (m model) View() string {
 	title := m.title.View()
 
 	// Combine the graphic and keyboard components
-	midView := lipgloss.JoinHorizontal(lipgloss.Center, m.currentGraphic, m.keyboard.View())
+	midView := lipgloss.JoinHorizontal(lipgloss.Center, m.graphicView.currentGraphic.View(), m.keyboard.View())
 
 	// Format components together to be aligned
 	s := lipgloss.JoinVertical(
