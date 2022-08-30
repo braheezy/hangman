@@ -27,6 +27,7 @@ var Colors = map[string]string{
 	"Surface1":    "#494d64",
 	"Surface0":    "#363a4f",
 	"Base":        "#24273a",
+	"DarkText":    "#24273a",
 	"Mantle":      "#1e2030",
 	"Crust":       "#181926",
 }
