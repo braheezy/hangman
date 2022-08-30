@@ -230,19 +230,37 @@ type GraphicView struct {
 	currentGraphic PrettyString
 	// Call this repeatedly to get the next graphic
 	graphicGenerator func() (string, error)
+	// If true, flash the graphic
+	flash bool
+	// The style to apply when flashing
+	flashStyle lipgloss.Style
 }
 
-var graphicStyle = lipgloss.NewStyle().
+var baseGraphicStyle = lipgloss.NewStyle().
 	Bold(true).
 	PaddingTop(1).PaddingBottom(1).
 	PaddingLeft(3).PaddingRight(3).
-	Foreground(lipgloss.Color(Colors["Mauve"])).
-	Background(lipgloss.Color(Colors["Base"])).
 	Border(lipgloss.RoundedBorder()).
-	BorderForeground(lipgloss.Color(Colors["Mauve"])).
-	BorderBackground(lipgloss.Color(Colors["Base"]))
+	BorderBackground(lipgloss.Color(Colors["Base"])).
+	Background(lipgloss.Color(Colors["Base"]))
+
+var graphicStyle = lipgloss.NewStyle().
+	Inherit(baseGraphicStyle).
+	Foreground(lipgloss.Color(Colors["Mauve"])).
+	BorderForeground(lipgloss.Color(Colors["Mauve"]))
+
+var flashWrongStyle = lipgloss.NewStyle().
+	Inherit(baseGraphicStyle).
+	Foreground(lipgloss.Color(Colors["Red"])).
+	BorderForeground(lipgloss.Color(Colors["Red"]))
+
+var flashCorrectStyle = lipgloss.NewStyle().
+	Inherit(baseGraphicStyle).
+	Foreground(lipgloss.Color(Colors["Green"])).
+	BorderForeground(lipgloss.Color(Colors["Green"]))
 
 func NewGraphicView() GraphicView {
+	// Set up the generator can call it once to get first graphic.
 	graphicGen := Graphics()
 	currentGraphic, err := graphicGen()
 	if err != nil {
@@ -255,5 +273,19 @@ func NewGraphicView() GraphicView {
 			style: graphicStyle,
 		},
 		graphicGenerator: graphicGen,
+		// "nil" style
+		flashStyle: lipgloss.NewStyle(),
 	}
+}
+
+func (g *GraphicView) View() string {
+	if g.flash {
+		g.currentGraphic.style = g.flashStyle
+	}
+	return g.currentGraphic.View()
+}
+
+func (g *GraphicView) ResetFlash() {
+	g.currentGraphic.style = graphicStyle
+	g.flash = false
 }

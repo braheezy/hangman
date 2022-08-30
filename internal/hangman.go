@@ -77,7 +77,7 @@ func validateInput() textinput.ValidateFunc {
 // ******************************************************************
 type model struct {
 	// Struct for all things related to the hangman graphic
-	graphicView GraphicView
+	graphicView *GraphicView
 	// The word the player is trying to guess
 	word string
 	// The "board" under the graphic where player guesses are shown
@@ -125,7 +125,7 @@ func initialModel() model {
 	footer := NewFooter()
 
 	return model{
-		graphicView: graphicView,
+		graphicView: &graphicView,
 		word:        word,
 		board:       board,
 		input:       textInput,
@@ -166,9 +166,12 @@ func handleGuess(m *model) {
 		return
 	}
 	// Reset notice content for next render
+	// Putting it here means it only clears when the user guesses again.
 	m.notice.text = ""
+
 	// Pull out the letter
 	guess := strings.ToUpper(m.input.Value())
+
 	// Can't guess letters already guessed
 	if slices.Contains(m.userGuesses, guess) {
 		m.notice.text = "Silly, you already guessed that! Try again"
@@ -180,9 +183,15 @@ func handleGuess(m *model) {
 			for _, id := range ids {
 				m.board[id].text = guess
 			}
+			// Update model to flash for correct guess on next render
+			m.graphicView.flash = true
+			m.graphicView.flashStyle = flashCorrectStyle
 		} else {
 			// Wrong guess! increment graphics
 			graphic, err := m.graphicView.graphicGenerator()
+			// Update model to flash for incorrect guess on next render
+			m.graphicView.flash = true
+			m.graphicView.flashStyle = flashWrongStyle
 			if err != nil {
 				// No more graphics to get. Player loses!
 				m.notice.text = fmt.Sprintf("You lose :(\nThe word you were looking for: %s", m.word)
@@ -208,15 +217,19 @@ func handleGuess(m *model) {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
+	// Clear out any flash status. This line is what makes it flash!
+	m.graphicView.ResetFlash()
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc", "ctrl+c":
 			return m, tea.Quit
-		// The player has guessed something. Process it.
 		case "enter":
+			// The player has guessed something. Process it.
 			handleGuess(&m)
 			if m.gameOver {
+				// TODO: Could allow "play again" feature
 				return m, tea.Quit
 			}
 		}
@@ -242,7 +255,7 @@ func (m model) View() string {
 	title := m.title.View()
 
 	// Combine the graphic and keyboard components
-	midView := lipgloss.JoinHorizontal(lipgloss.Center, m.graphicView.currentGraphic.View(), m.keyboard.View())
+	midView := lipgloss.JoinHorizontal(lipgloss.Center, m.graphicView.View(), m.keyboard.View())
 
 	// Format components together to be aligned
 	s := lipgloss.JoinVertical(
