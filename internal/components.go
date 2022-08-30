@@ -237,25 +237,28 @@ type GraphicView struct {
 }
 
 var baseGraphicStyle = lipgloss.NewStyle().
-	Bold(true).
-	PaddingTop(1).PaddingBottom(1).
-	PaddingLeft(3).PaddingRight(3).
 	Border(lipgloss.RoundedBorder()).
 	BorderBackground(lipgloss.Color(Colors["Base"])).
 	Background(lipgloss.Color(Colors["Base"]))
 
 var graphicStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
+	Bold(true).
+	Padding(1, 3, 1, 3).
 	Foreground(lipgloss.Color(Colors["Mauve"])).
 	BorderForeground(lipgloss.Color(Colors["Mauve"]))
 
 var flashWrongStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
+	Bold(true).
+	Padding(1, 3, 1, 3).
 	Foreground(lipgloss.Color(Colors["Red"])).
 	BorderForeground(lipgloss.Color(Colors["Red"]))
 
 var flashCorrectStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
+	Bold(true).
+	Padding(1, 3, 1, 3).
 	Foreground(lipgloss.Color(Colors["Green"])).
 	BorderForeground(lipgloss.Color(Colors["Green"]))
 
