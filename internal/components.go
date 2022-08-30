@@ -31,11 +31,15 @@ func (b Banner) View() string {
 // ******************************************************
 var titleStyle = lipgloss.NewStyle().
 	Bold(true).
-	Foreground(lipgloss.Color(Colors["Text"]))
+	Align(lipgloss.Center).
+	Foreground(lipgloss.Color(Colors["DarkText"])).
+	Background(lipgloss.Color(Colors["Mauve"])).
+	PaddingLeft(2).
+	PaddingRight(2)
 
 func NewTitle() Banner {
 	return Banner{
-		text:  "Play Hangman!",
+		text:  "Hangman\nCan you save this criminal?",
 		style: titleStyle,
 	}
 }
@@ -163,7 +167,7 @@ type Keyboard struct {
 }
 
 var letterOffStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color(Colors["Base"])).
+	Foreground(lipgloss.Color(Colors["DarkText"])).
 	Background(lipgloss.Color(Colors["Mauve"])).
 	Width(3).
 	Align(lipgloss.Center)

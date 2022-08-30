@@ -189,7 +189,7 @@ func handleGuess(m *model) {
 			graphic, err := m.graphicGenerator()
 			if err != nil {
 				// No more graphics to get. Player loses!
-				m.notice.text = fmt.Sprintf("You lose :(\nThe word we were looking for: %s", m.word)
+				m.notice.text = fmt.Sprintf("You lose :(\nThe word you were looking for: %s", m.word)
 				m.gameOver = true
 			} else {
 				m.currentGraphic = graphic
@@ -241,11 +241,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 //
 // ******************************************************************
 func (m model) View() string {
-	// Title area
-	s := m.title.View()
+	// Build up pieces for top half of view
+	// Get the title
+	title := m.title.View()
 
-	// Current hangman graphic is replaced as player makes incorrect guesses
-	s += lipgloss.JoinHorizontal(lipgloss.Center, m.currentGraphic, m.keyboard.View())
+	// Combine the graphic and keyboard components
+	midView := lipgloss.JoinHorizontal(lipgloss.Center, m.currentGraphic, m.keyboard.View())
+
+	// Format components together to be aligned
+	s := lipgloss.JoinVertical(
+		lipgloss.Center,
+		title,
+		midView,
+	)
 
 	// Render the board where the word is revealed as player makes correct guess
 	s += "\n\n" + m.board.View(" ")
@@ -264,6 +272,8 @@ func (m model) View() string {
 	if m.notice.text != "" {
 		s += m.notice.View()
 	}
+
+	s += "\n"
 
 	// footer
 	s += m.footer.View()
