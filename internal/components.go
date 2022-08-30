@@ -232,7 +232,15 @@ type GraphicView struct {
 	graphicGenerator func() (string, error)
 }
 
-var graphicStyle = lipgloss.NewStyle()
+var graphicStyle = lipgloss.NewStyle().
+	Bold(true).
+	PaddingTop(1).PaddingBottom(1).
+	PaddingLeft(3).PaddingRight(3).
+	Foreground(lipgloss.Color(Colors["Mauve"])).
+	Background(lipgloss.Color(Colors["Base"])).
+	Border(lipgloss.RoundedBorder()).
+	BorderForeground(lipgloss.Color(Colors["Mauve"])).
+	BorderBackground(lipgloss.Color(Colors["Base"]))
 
 func NewGraphicView() GraphicView {
 	graphicGen := Graphics()
