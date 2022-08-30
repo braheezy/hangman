@@ -1,8 +1,11 @@
 package internal
 
 import (
+	"errors"
 	"strings"
+	"unicode"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -60,7 +63,8 @@ func NewTitle() PrettyString {
 //
 // ******************************************************
 var footerStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color(Colors["Text"]))
+	Foreground(lipgloss.Color(Colors["Mauve"])).
+	Underline(true)
 
 func NewFooter() PrettyString {
 	return PrettyString{
@@ -77,7 +81,16 @@ func NewFooter() PrettyString {
 // ******************************************************
 var noticeStyle = lipgloss.NewStyle().
 	Bold(true).
-	Foreground(lipgloss.Color(Colors["Text"]))
+	Italic(true).
+	Foreground(lipgloss.Color(Colors["Mauve"]))
+
+var loseNoticeStyle = lipgloss.NewStyle().
+	Inherit(noticeStyle).
+	Foreground(lipgloss.Color(Colors["Red"]))
+
+var winNoticeStyle = lipgloss.NewStyle().
+	Inherit(noticeStyle).
+	Foreground(lipgloss.Color(Colors["Green"]))
 
 func NewNotice() PrettyString {
 	return PrettyString{
@@ -237,27 +250,25 @@ type GraphicView struct {
 }
 
 var baseGraphicStyle = lipgloss.NewStyle().
+	Bold(true).
 	Border(lipgloss.RoundedBorder()).
 	BorderBackground(lipgloss.Color(Colors["Base"])).
 	Background(lipgloss.Color(Colors["Base"]))
 
 var graphicStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
-	Bold(true).
 	Padding(1, 3, 1, 3).
 	Foreground(lipgloss.Color(Colors["Mauve"])).
 	BorderForeground(lipgloss.Color(Colors["Mauve"]))
 
 var flashWrongStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
-	Bold(true).
 	Padding(1, 3, 1, 3).
 	Foreground(lipgloss.Color(Colors["Red"])).
 	BorderForeground(lipgloss.Color(Colors["Red"]))
 
 var flashCorrectStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
-	Bold(true).
 	Padding(1, 3, 1, 3).
 	Foreground(lipgloss.Color(Colors["Green"])).
 	BorderForeground(lipgloss.Color(Colors["Green"]))
@@ -291,4 +302,42 @@ func (g *GraphicView) View() string {
 func (g *GraphicView) ResetFlash() {
 	g.currentGraphic.style = graphicStyle
 	g.flash = false
+}
+
+// ******************************************************************
+//
+//		Player input area
+// A 1-character text input area for the player to make letter guesses
+// ******************************************************************
+
+func newInput() textinput.Model {
+	ti := textinput.New()
+	ti.Placeholder = "Guess a letter!"
+	ti.Focus()
+	ti.CharLimit = 1
+	ti.Width = 1
+
+	ti.Validate = validateInput()
+
+	// TODO: Is there a better place to put this?
+	ti.Prompt = "➠ "
+	ti.PromptStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color(Colors["Flamingo"]))
+	ti.PlaceholderStyle = lipgloss.NewStyle().
+		Italic(true).
+		Faint(true).
+		Foreground(lipgloss.Color(Colors["Flamingo"]))
+
+	return ti
+}
+
+// Only allow letter inputs
+func validateInput() textinput.ValidateFunc {
+	return func(s string) error {
+		letter := rune(s[0])
+		if !unicode.IsLetter(letter) {
+			return errors.New("not valid input")
+		}
+		return nil
+	}
 }

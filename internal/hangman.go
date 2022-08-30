@@ -2,14 +2,12 @@ package internal
 
 import (
 	"embed"
-	"errors"
 	"fmt"
 	"math/rand"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
-	"unicode"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -40,35 +38,6 @@ func LoadWords() (words []string, err error) {
 }
 
 var dictionary, _ = LoadWords()
-
-// ******************************************************************
-//
-//	Handle player input
-//
-// ******************************************************************
-// A 1-character text input area for the player to make letter guesses
-func newInput() textinput.Model {
-	ti := textinput.New()
-	ti.Placeholder = "Guess a letter!"
-	ti.Focus()
-	ti.CharLimit = 1
-	ti.Width = 1
-
-	ti.Validate = validateInput()
-
-	return ti
-}
-
-// Only allow letter inputs
-func validateInput() textinput.ValidateFunc {
-	return func(s string) error {
-		letter := rune(s[0])
-		if !unicode.IsLetter(letter) {
-			return errors.New("not valid input")
-		}
-		return nil
-	}
-}
 
 // ******************************************************************
 //
@@ -194,7 +163,8 @@ func handleGuess(m *model) {
 			m.graphicView.flashStyle = flashWrongStyle
 			if err != nil {
 				// No more graphics to get. Player loses!
-				m.notice.text = fmt.Sprintf("You lose :(\nThe word you were looking for: %s", m.word)
+				m.notice.text = fmt.Sprintf("You lose :(\nThe hidden word was: %s", m.word)
+				m.notice.style = loseNoticeStyle
 				m.gameOver = true
 			} else {
 				m.graphicView.currentGraphic.text = graphic
@@ -210,6 +180,7 @@ func handleGuess(m *model) {
 	// If there aren't any more blank tiles then word is filled! Winner!
 	if !m.board.Contains(blankBoardTile) {
 		m.notice.text = "Woo you win! Feel free to re-run the program to play again!"
+		m.notice.style = winNoticeStyle
 		m.gameOver = true
 	}
 }
@@ -218,7 +189,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	// Clear out any flash status. This line is what makes it flash!
-	m.graphicView.ResetFlash()
+	if m.graphicView.flash {
+		m.graphicView.ResetFlash()
+	}
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
