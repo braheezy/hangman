@@ -44,10 +44,11 @@ func (s PrettyString) View() string {
 var titleStyle = lipgloss.NewStyle().
 	Bold(true).
 	Align(lipgloss.Center).
-	Foreground(lipgloss.Color(Colors["DarkText"])).
-	Background(lipgloss.Color(Colors["Mauve"])).
+	Foreground(textColor).
+	Background(primaryColor).
 	PaddingLeft(2).
-	PaddingRight(2)
+	PaddingRight(2).
+	MarginBottom(1)
 
 func NewTitle() PrettyString {
 	return PrettyString{
@@ -63,7 +64,7 @@ func NewTitle() PrettyString {
 //
 // ******************************************************
 var footerStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color(Colors["Mauve"])).
+	Foreground(primaryColor).
 	Underline(true)
 
 func NewFooter() PrettyString {
@@ -82,15 +83,15 @@ func NewFooter() PrettyString {
 var noticeStyle = lipgloss.NewStyle().
 	Bold(true).
 	Italic(true).
-	Foreground(lipgloss.Color(Colors["Mauve"]))
+	Foreground(primaryColor)
 
 var loseNoticeStyle = lipgloss.NewStyle().
 	Inherit(noticeStyle).
-	Foreground(lipgloss.Color(Colors["Red"]))
+	Foreground(failColor)
 
 var winNoticeStyle = lipgloss.NewStyle().
 	Inherit(noticeStyle).
-	Foreground(lipgloss.Color(Colors["Green"]))
+	Foreground(successColor)
 
 func NewNotice() PrettyString {
 	return PrettyString{
@@ -110,8 +111,8 @@ var blankBoardTile = " "
 
 var boardTileStyle = lipgloss.NewStyle().
 	Bold(true).
-	Foreground(lipgloss.Color(Colors["Pink"])).
-	Background(lipgloss.Color(Colors["StrongMauve"])).
+	Foreground(secondaryColor).
+	Background(strongColor).
 	Width(5).
 	Align(lipgloss.Center)
 
@@ -166,14 +167,14 @@ type Keyboard struct {
 }
 
 var letterOffStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color(Colors["DarkText"])).
-	Background(lipgloss.Color(Colors["Mauve"])).
+	Foreground(textColor).
+	Background(primaryColor).
 	Width(3).
 	Align(lipgloss.Center)
 
 var letterOnStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color(Colors["Mauve"])).
-	Background(lipgloss.Color(Colors["Overlay0"])).
+	Foreground(primaryColor).
+	Background(tertiaryColor).
 	Width(3).
 	Align(lipgloss.Center).
 	Bold(true)
@@ -252,26 +253,26 @@ type GraphicView struct {
 var baseGraphicStyle = lipgloss.NewStyle().
 	Bold(true).
 	Border(lipgloss.RoundedBorder()).
-	BorderBackground(lipgloss.Color(Colors["Base"])).
-	Background(lipgloss.Color(Colors["Base"]))
+	BorderBackground(backgroundColor).
+	Background(backgroundColor)
 
 var graphicStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
 	Padding(1, 3, 1, 3).
-	Foreground(lipgloss.Color(Colors["Mauve"])).
-	BorderForeground(lipgloss.Color(Colors["Mauve"]))
+	Foreground(primaryColor).
+	BorderForeground(primaryColor)
 
 var flashWrongStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
 	Padding(1, 3, 1, 3).
-	Foreground(lipgloss.Color(Colors["Red"])).
-	BorderForeground(lipgloss.Color(Colors["Red"]))
+	Foreground(failColor).
+	BorderForeground(failColor)
 
 var flashCorrectStyle = lipgloss.NewStyle().
 	Inherit(baseGraphicStyle).
 	Padding(1, 3, 1, 3).
-	Foreground(lipgloss.Color(Colors["Green"])).
-	BorderForeground(lipgloss.Color(Colors["Green"]))
+	Foreground(successColor).
+	BorderForeground(successColor)
 
 func NewGraphicView() GraphicView {
 	// Set up the generator can call it once to get first graphic.
@@ -320,13 +321,13 @@ func newInput() textinput.Model {
 	ti.Validate = validateInput()
 
 	// TODO: Is there a better place to put this?
-	ti.Prompt = "➠ "
+	ti.Prompt = "─> "
 	ti.PromptStyle = lipgloss.NewStyle().
-		Foreground(lipgloss.Color(Colors["Flamingo"]))
+		Foreground(secondaryColor)
 	ti.PlaceholderStyle = lipgloss.NewStyle().
 		Italic(true).
 		Faint(true).
-		Foreground(lipgloss.Color(Colors["Flamingo"]))
+		Foreground(secondaryColor)
 
 	return ti
 }
