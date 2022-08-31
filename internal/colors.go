@@ -92,21 +92,21 @@ var primaryColor = lipgloss.AdaptiveColor{
 //   - Board text color
 //   - Player input area
 var secondaryColor = lipgloss.AdaptiveColor{
-	Light: LightColors["Pink"],
+	Light: LightColors["Teal"],
 	Dark:  DarkColors["Pink"],
 }
 
 // Third complimentary color:
 //   - Keyboard letter background during On state
 var tertiaryColor = lipgloss.AdaptiveColor{
-	Light: LightColors["Overlay0"],
-	Dark:  DarkColors["Overlay0"],
+	Light: LightColors["Surface2"],
+	Dark:  DarkColors["Surface2"],
 }
 
 // Controls the strong color used in the app:
 //   - The background of the board where word is revealed
 var strongColor = lipgloss.AdaptiveColor{
-	Light: DarkColors["StrongMauve"],
+	Light: DarkColors["Sapphire"],
 	Dark:  DarkColors["StrongMauve"],
 }
 
