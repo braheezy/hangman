@@ -49,3 +49,12 @@ The following is to be implemented:
 - [ ] Allow users to change theme :art:
     - Port the current color code definitions to some type of config file (YAML?)
     - Read the file at runtime
+- [ ] Build and distribute binaries :construction:
+    - [ ] Provide build instructions for eager beavers
+    - [ ] Make binaries and add to Releases
+    - [ ] CI/CD everything above
+
+## More
+Light mode support :partying_face:
+
+![demo](./assets/light-demo.png)
