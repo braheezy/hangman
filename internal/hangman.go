@@ -267,6 +267,7 @@ func (m model) View() string {
 //
 //		Clear screen logic
 //	Thanks: https://stackoverflow.com/questions/22891644/how-can-i-clear-the-terminal-screen-in-go
+//	TODO: Library termenv which we already import seems to support this: https://pkg.go.dev/github.com/muesli/termenv#readme-screen
 //
 // ******************************************************************
 // Store clear commands for different OSes

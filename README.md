@@ -53,6 +53,7 @@ The following is to be implemented:
     - [ ] Provide build instructions for eager beavers
     - [ ] Make binaries and add to Releases
     - [ ] CI/CD everything above
+- [ ] Decide if implementing a scalable Difficulty mode is worth it
 
 ## More
 Light mode support :partying_face:
