@@ -70,6 +70,8 @@ type model struct {
 	// Dimensions of terminal windows
 	height int
 	width  int
+	// If the board is cut off, this is how many tiles are being cut
+	numCutoffTiles int
 	// Any errors caught go here and should be reported somewhere
 	err error
 }
@@ -99,21 +101,22 @@ func initialModel() model {
 	footer := NewFooter()
 
 	return model{
-		graphicView:  &graphicView,
-		word:         word,
-		board:        board,
-		input:        textInput,
-		userGuesses:  userGuesses,
-		keyboard:     &keyboard,
-		showKeyboard: true,
-		notice:       notice,
-		gameOver:     false,
-		title:        title,
-		showTitle:    true,
-		footer:       footer,
-		height:       0,
-		width:        0,
-		err:          nil,
+		graphicView:    &graphicView,
+		word:           word,
+		board:          board,
+		input:          textInput,
+		userGuesses:    userGuesses,
+		keyboard:       &keyboard,
+		showKeyboard:   true,
+		notice:         notice,
+		gameOver:       false,
+		title:          title,
+		showTitle:      true,
+		footer:         footer,
+		height:         0,
+		width:          0,
+		numCutoffTiles: 0,
+		err:            nil,
 	}
 }
 
@@ -214,6 +217,17 @@ func handleScreenResize(m *model) {
 	} else {
 		m.showTitle = true
 	}
+
+	// Count how many tiles are cut off if there isn't enough room
+	maxWidth = lipgloss.Width(m.board.View(" "))
+	if m.width < maxWidth {
+		tileSize := lipgloss.Width(m.board[0].View())
+		m.numCutoffTiles = (maxWidth-m.width)/tileSize + 1
+		ClearScreen()
+	} else {
+		m.numCutoffTiles = 0
+	}
+
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -281,7 +295,14 @@ func (m model) View() string {
 	)
 
 	// Render the board where the word is revealed as player makes correct guess
-	s += "\n\n" + m.board.View(" ")
+	// Wrap the tiles if the window is too small
+	board := m.board.View(" ")
+	if m.numCutoffTiles > 0 {
+		// Wrap effect is done by inserting newlines at the cutoff point
+		wrappedBoard := slices.Insert(m.board, len(m.board)-m.numCutoffTiles, PrettyString{"\n\n", lipgloss.NewStyle()})
+		board = wrappedBoard.View(" ")
+	}
+	s += "\n\n" + board
 
 	// Render the little input area for player guesses
 	s += "\n\n" + m.input.View()

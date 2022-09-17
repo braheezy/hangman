@@ -4,7 +4,7 @@
 # Hangman
 A Go TUI [Hangman](https://www.wikihow.com/Play-Hangman) game built with the lovely [BubbleTea](https://github.com/charmbracelet/bubbletea) framework.
 
-This project exists to teach myself Go and learn about BubbleTea because it looks like an understandable, powerful, and good looking TUI framework. My past attempt at a [TUI in Python](https://github.com/braheezy/pyrdle) didn't go so well. It's already going much better with this project :)
+This project exists to teach myself Go and learn about BubbleTea because it looks like an understandable, powerful, and pleasing looking TUI framework. My past attempt at a [TUI in Python](https://github.com/braheezy/pyrdle) didn't go so well. It's already going much better with this project :)
 
 ## Usage
 For now, clone the project and then run:
@@ -38,11 +38,11 @@ The following is to be implemented:
 - [x] Support light mode terminals :angel:
     - It works okay but it could be better for heathens using light color themes
     - Lipgloss has `AdaptiveColor` for this support
-- [ ] Handle screen resizing better :straight_ruler:
+- [x] Handle screen resizing better :straight_ruler:
     - In `View()` use knowledge of window dimensions to smartly draw things:
         - [x] If the keyboard doesn't fit, remove it
         - [x] If the title doesn't fit, hide it
-        - [ ] If the board tiles are too long, wrap them. This has been seen with long (10+ characters) words to guess.
+        - [x] If the board tiles are too long, wrap them. This has been seen with long (10+ characters) words to guess.
 - [ ] Allow users to change theme :art:
     - Port the current color code definitions to some type of config file (YAML?)
     - Read the file at runtime
