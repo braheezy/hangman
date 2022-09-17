@@ -56,15 +56,20 @@ type model struct {
 	// All the letters the player has guessed
 	userGuesses []string
 	// All the possible letters that can be guessed
-	keyboard *Keyboard
+	keyboard     *Keyboard
+	showKeyboard bool
 	// The notice area thing
 	notice PrettyString
 	// Did game end?
 	gameOver bool
 	// Title banner
-	title PrettyString
+	title     PrettyString
+	showTitle bool
 	// Footer banner area
 	footer PrettyString
+	// Dimensions of terminal windows
+	height int
+	width  int
 	// Any errors caught go here and should be reported somewhere
 	err error
 }
@@ -94,17 +99,21 @@ func initialModel() model {
 	footer := NewFooter()
 
 	return model{
-		graphicView: &graphicView,
-		word:        word,
-		board:       board,
-		input:       textInput,
-		userGuesses: userGuesses,
-		keyboard:    &keyboard,
-		notice:      notice,
-		gameOver:    false,
-		title:       title,
-		footer:      footer,
-		err:         nil,
+		graphicView:  &graphicView,
+		word:         word,
+		board:        board,
+		input:        textInput,
+		userGuesses:  userGuesses,
+		keyboard:     &keyboard,
+		showKeyboard: true,
+		notice:       notice,
+		gameOver:     false,
+		title:        title,
+		showTitle:    true,
+		footer:       footer,
+		height:       0,
+		width:        0,
+		err:          nil,
 	}
 }
 
@@ -185,6 +194,28 @@ func handleGuess(m *model) {
 	}
 }
 
+// Update model based on terminal resizing.
+// Clear the screen if required.
+func handleScreenResize(m *model) {
+	// Hide keyboard if there isn't enough room
+	maxWidth := lipgloss.Width(m.graphicView.View()) + lipgloss.Width(m.keyboard.View())
+	if m.width < maxWidth && m.showKeyboard {
+		m.showKeyboard = false
+		ClearScreen()
+	} else {
+		m.showKeyboard = true
+	}
+
+	// Hide title if there isn't enough room
+	maxWidth = lipgloss.Width(m.title.View())
+	if m.width < maxWidth && m.showTitle {
+		m.showTitle = false
+		ClearScreen()
+	} else {
+		m.showTitle = true
+	}
+}
+
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -207,7 +238,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
-	// We handle errors just like any other message
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Width
+		handleScreenResize(&m)
+
 	case errMsg:
 		m.err = msg
 		return m, nil
@@ -225,10 +260,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	// Build up pieces for top half of view
 	// Get the title
-	title := m.title.View()
+	title := ""
+	if m.showTitle {
+		title = m.title.View()
+	}
+
+	keyboardElement := ""
+	if m.showKeyboard {
+		keyboardElement = m.keyboard.View()
+	}
 
 	// Combine the graphic and keyboard components
-	midView := lipgloss.JoinHorizontal(lipgloss.Center, m.graphicView.View(), m.keyboard.View())
+	midView := lipgloss.JoinHorizontal(lipgloss.Center, m.graphicView.View(), keyboardElement)
 
 	// Format components together to be aligned
 	s := lipgloss.JoinVertical(

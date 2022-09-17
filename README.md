@@ -39,13 +39,10 @@ The following is to be implemented:
     - It works okay but it could be better for heathens using light color themes
     - Lipgloss has `AdaptiveColor` for this support
 - [ ] Handle screen resizing better :straight_ruler:
-    - There's a `tea.WindowSizeMsg` that can be caught in `Update()` and you can save me window dimensions to model:
-
-          m.height = msg.Height
-          m.width = msg.Width
     - In `View()` use knowledge of window dimensions to smartly draw things:
-        - If the keyboard doesn't fit, remove it
-        - If the board tiles are too long, wrap them. This has been seen with long (10+ characters) words to guess.
+        - [x] If the keyboard doesn't fit, remove it
+        - [x] If the title doesn't fit, hide it
+        - [ ] If the board tiles are too long, wrap them. This has been seen with long (10+ characters) words to guess.
 - [ ] Allow users to change theme :art:
     - Port the current color code definitions to some type of config file (YAML?)
     - Read the file at runtime
