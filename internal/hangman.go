@@ -199,7 +199,7 @@ func handleGuess(m *model) {
 func handleScreenResize(m *model) {
 	// Hide keyboard if there isn't enough room
 	maxWidth := lipgloss.Width(m.graphicView.View()) + lipgloss.Width(m.keyboard.View())
-	if m.width < maxWidth && m.showKeyboard {
+	if m.width < maxWidth {
 		m.showKeyboard = false
 		ClearScreen()
 	} else {
@@ -208,7 +208,7 @@ func handleScreenResize(m *model) {
 
 	// Hide title if there isn't enough room
 	maxWidth = lipgloss.Width(m.title.View())
-	if m.width < maxWidth && m.showTitle {
+	if m.width < maxWidth {
 		m.showTitle = false
 		ClearScreen()
 	} else {
