@@ -26,3 +26,6 @@ changelog:
       - '^docs:'
       - '^test:'
 release:
+  github:
+    owner: braheezy
+    name: hangman
