@@ -27,4 +27,4 @@ changelog:
       - '^test:'
 release:
   header: |
-  Latest release binaries below :rocket:
+    "Latest release binaries below :rocket:"
