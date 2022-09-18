@@ -1,16 +1,22 @@
 ![demo](./assets/demo.gif)
 
 
-# Hangman
+# hangman
 A Go TUI [Hangman](https://www.wikihow.com/Play-Hangman) game built with the lovely [BubbleTea](https://github.com/charmbracelet/bubbletea) framework.
 
 This project exists to teach myself Go and learn about BubbleTea because it looks like an understandable, powerful, and pleasing looking TUI framework. My past attempt at a [TUI in Python](https://github.com/braheezy/pyrdle) didn't go so well. It's already going much better with this project :)
 
-## Usage
-Clone the project and then run:
-```console
-go run main.go
-```
+## Installation
+The easiest way to run `hangman` is to use one of the [pre-compiled binaries](https://github.com/braheezy/hangman/releases) in the Releases.
+
+Or install it with `go`:
+
+    go install github.com/braheezy/hangman@latest
+
+Or from source, clone the project and run:
+
+    go run main.go
+
 
 Enjoy!
 
@@ -45,13 +51,16 @@ The following is to be implemented:
 - [ ] Allow users to change theme :art:
     - Port the current color code definitions to some type of config file (YAML?)
     - Read the file at runtime
-- [ ] Build and distribute binaries :construction:
-    - [ ] Provide build instructions for eager beavers
-    - [ ] Make binaries and add to Releases
-    - [ ] CI/CD everything above
+- [x] Build and distribute binaries :construction:
+    - [x] Provide build instructions for eager beavers
+    - [x] Make binaries and add to Releases
+    - [x] CI/CD everything above
 - [ ] Decide if implementing a scalable Difficulty mode is worth it
 
 ## More
 Light mode support :partying_face:
 
 ![demo](./assets/light-demo.png)
+
+## Contributing
+Please contribute! For small things, please fork and open a PR. For large changes, please submit an Issue first.
