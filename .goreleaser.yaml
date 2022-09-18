@@ -26,6 +26,5 @@ changelog:
       - '^docs:'
       - '^test:'
 release:
-  github:
-    owner: braheezy
-    name: hangman
+  header: |
+  Latest release binaries below :rocket:
