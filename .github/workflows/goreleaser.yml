@@ -1,6 +1,7 @@
 name: goreleaser
 
 on:
+  workflow_call:
   push:
     tags:
       - '*'
